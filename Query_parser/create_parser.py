@@ -53,6 +53,7 @@ class CreateParser:
                              'partition_size= 10;')
 
         self.partition_size = partition_size
+        return self.get_table_model()
 
     def get_table_model(self):
         if self.partition_size:

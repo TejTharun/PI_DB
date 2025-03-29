@@ -1,7 +1,7 @@
 from Exceptions.CreationExceptions import TableAlreadyExists
 from typing import Dict
 from Utils.TimeUtils import get_time_stamp
-from Utils.Constants import BASE_PATH
+from Utils.Constants import get_base_directory
 import json
 import os
 
@@ -13,7 +13,7 @@ class Table:
         self.table_name = table_name
         self.primary_key = primary_key
         self.columns = columns
-        self.tables_directory = BASE_PATH + "/Tables"
+        self.tables_directory = get_base_directory() + "/Tables"
         self.current_table_path = self.tables_directory + '/' + self.table_name
         self.table_partition_size = partition_size
         self.default_time_to_live = default_time_to_live
@@ -24,7 +24,7 @@ class Table:
                     os.path.isdir(os.path.join(self.tables_directory, curr_directory))])
 
     def fill_meta_data_file_for_table(self):
-        meta_data_template_file_path = BASE_PATH + '/Templates/meta_data_template.json'
+        meta_data_template_file_path = get_base_directory() + '/Templates/meta_data_template.json'
 
         template_data = {}
         with open(meta_data_template_file_path, 'r') as fo:
@@ -43,18 +43,9 @@ class Table:
             fo.write(json.dumps(template_data))
         print("meta_data created successfully")
 
-    def create_table(self):
-        # check if the table is already present and throw exception if it exists
-        try:
-            if self.table_name in self.__all_directories__():
-                raise TableAlreadyExists("cannot create an existing table", self.table_name)
-        except TableAlreadyExists as e:
-            print("Error:", e)
-            return
-
+    def create_primary_key_partitions(self):
         table_path = self.tables_directory + '/' + self.table_name
         primary_keys_directory = table_path + '/primary_keys'
-
         self.primary_key_partitions_directory = primary_keys_directory
         try:
             os.makedirs(table_path)
@@ -64,7 +55,37 @@ class Table:
                 primary_key_partition_file = self.primary_key_partitions_directory + '/' + str(i) + '.txt'
                 with open(primary_key_partition_file, 'w') as fo:
                     pass
-            self.fill_meta_data_file_for_table()
+            print(f"{self.table_name} and primary_key partitions ({self.table_partition_size})created successfully")
         except Exception as e:
             print("Error during table creation: ", e)
+        return
 
+    def create_column_directory(self, columns_directory_name: str, column_name: str):
+
+        current_column_name_file = columns_directory_name + '/' + column_name + '.txt'
+        with open(current_column_name_file, 'w') as fo:
+            pass
+
+    def create_columns(self):
+        columns_directory_name = self.current_table_path + '/Columns'
+        try:
+            os.makedirs(columns_directory_name)
+        except Exception as e:
+            print("Error while creating Columns ", e)
+        for column in self.columns:
+            self.create_column_directory(columns_directory_name, column)
+            pass
+        print("columns created successfully")
+
+    def create_table(self):
+        # check if the table is already present and throw exception if it exists
+        try:
+            if self.table_name in self.__all_directories__():
+                raise TableAlreadyExists("cannot create an existing table", self.table_name)
+        except TableAlreadyExists as e:
+            print("Error:", e)
+            return
+
+        self.create_primary_key_partitions()
+        self.fill_meta_data_file_for_table()
+        self.create_columns()
