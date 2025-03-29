@@ -6,6 +6,13 @@ import json
 import os
 
 
+def create_column_directory(columns_directory_name: str, column_name: str):
+
+    current_column_name_file = columns_directory_name + '/' + column_name + '.txt'
+    with open(current_column_name_file, 'w') as fo:
+        pass
+
+
 class Table:
     def __init__(self, table_name: str, primary_key: str, columns: Dict, partition_size: int = 3,
                  default_time_to_live: int = 10):
@@ -60,12 +67,6 @@ class Table:
             print("Error during table creation: ", e)
         return
 
-    def create_column_directory(self, columns_directory_name: str, column_name: str):
-
-        current_column_name_file = columns_directory_name + '/' + column_name + '.txt'
-        with open(current_column_name_file, 'w') as fo:
-            pass
-
     def create_columns(self):
         columns_directory_name = self.current_table_path + '/Columns'
         try:
@@ -73,7 +74,7 @@ class Table:
         except Exception as e:
             print("Error while creating Columns ", e)
         for column in self.columns:
-            self.create_column_directory(columns_directory_name, column)
+            create_column_directory(columns_directory_name, column)
             pass
         print("columns created successfully")
 
