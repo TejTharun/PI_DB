@@ -1,6 +1,7 @@
 from Exceptions.CreationExceptions import TableAlreadyExists
 from typing import Dict
 from Utils.TimeUtils import get_time_stamp
+from Utils.Constants import BASE_PATH
 import json
 import os
 
@@ -12,7 +13,7 @@ class Table:
         self.table_name = table_name
         self.primary_key = primary_key
         self.columns = columns
-        self.tables_directory = os.getcwd() + "/Tables"
+        self.tables_directory = BASE_PATH + "/Tables"
         self.current_table_path = self.tables_directory + '/' + self.table_name
         self.table_partition_size = partition_size
         self.default_time_to_live = default_time_to_live
@@ -23,7 +24,7 @@ class Table:
                     os.path.isdir(os.path.join(self.tables_directory, curr_directory))])
 
     def fill_meta_data_file_for_table(self):
-        meta_data_template_file_path = '/Users/c0t08nm/Documents/PI_DB/Templates/meta_data_template.json'
+        meta_data_template_file_path = BASE_PATH + '/Templates/meta_data_template.json'
 
         template_data = {}
         with open(meta_data_template_file_path, 'r') as fo:
