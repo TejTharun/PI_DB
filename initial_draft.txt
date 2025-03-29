@@ -1,0 +1,41 @@
+from table/primary_keys.txt page
+
+we will have 100 files, where naming 00.txt, 01.txt ... 99.txt
+
+when given a primary key, 
+compute hash(primary_key_provided)
+take last 2 digits of this hash and store that primarykey in xy.txt file
+
+in this format
+primary_key=<line_number in all column files>
+
+
+when ever we execute a select * from table_name where key = pk1
+
+we parse query and find 
+query = query.strip()
+
+
+clause = query[:query.index(' ')]
+if it is a select  clause then it must be a GET statement, read only mode
+    column_names = query[query.index('select') + len('select'): query.index('from')].strip()
+
+    if column_name == '*' then all else search in specified column names
+
+
+    table_name = query[query.index('from') + len('from'): query.index('where')].strip()
+
+    primary_key = query[query.index('=')+1:].strip()[1:-1]
+
+    find hash for primary_key and extract last 2 digits
+
+    got primary_keys_indexing directory and then to xy.txt file and then read each line until you find a match in that file
+
+    if no match is found return empty
+    else from here we get line number which we have to read from remaining columns
+
+    then go to each column file and read that line number and store them in a dictionary
+
+    return dictionary
+if it is Update clause then we should open 
+    
