@@ -6,11 +6,7 @@ import json
 import os
 
 
-def create_column_directory(columns_directory_name: str, column_name: str):
 
-    current_column_name_file = columns_directory_name + '/' + column_name + '.txt'
-    with open(current_column_name_file, 'w') as fo:
-        pass
 
 
 class Table:
@@ -74,10 +70,15 @@ class Table:
         except Exception as e:
             print("Error while creating Columns ", e)
         for column in self.columns:
-            create_column_directory(columns_directory_name, column)
+            self.create_column_directory(columns_directory_name, column)
             pass
         print("columns created successfully")
 
+    def create_column_directory(self, columns_directory_name: str, column_name: str):
+
+        current_column_name_file = columns_directory_name + '/' + column_name + '.txt'
+        with open(current_column_name_file, 'w') as fo:
+            pass
     def create_table(self):
         # check if the table is already present and throw exception if it exists
         try:
