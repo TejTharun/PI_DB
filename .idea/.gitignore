@@ -1,13 +1,16 @@
+# Default ignored files
+/shelf/
+/workspace.xml
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
 
 # team specifications
+
+Tables/
 *.iml
 *.xml
-Tables/
-.idea
 # C extensions
 *.so
 
