@@ -34,6 +34,7 @@ class CreateParser:
                 self.columns[col_name.strip()] = type.strip()
 
     def parse(self):
+        self.query = self.query.lower()
         self.table_name = self.query[self.query.index('table') + len('table'): self.query.index('(')].strip()
         raw_column_details = self.query[self.query.index('(') + 1:self.query.index(')')]
         # print(self.table_name, raw_column_details)

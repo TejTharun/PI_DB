@@ -1,15 +1,13 @@
 from Exceptions.CreationExceptions import TableAlreadyExists
-from typing import Dict
+from typing import Dict, Tuple
 from Utils.TimeUtils import get_time_stamp
 from Utils.Constants import get_base_directory
 import json
 import os
 
 
-
-
-
 class Table:
+
     def __init__(self, table_name: str, primary_key: str, columns: Dict, partition_size: int = 3,
                  default_time_to_live: int = 10):
         self.primary_key_partitions_directory = None
@@ -21,6 +19,14 @@ class Table:
         self.table_partition_size = partition_size
         self.default_time_to_live = default_time_to_live
         self.meta_data_file_name = self.current_table_path + '/meta_data.json'
+        self.primary_key_value_pair = None
+        self.columns = None
+
+    @classmethod
+    def initialize_table_for_insertion(self, table_name, primary_key_value_pair: Tuple, column_value_dict: Dict):
+        self.table_name = table_name
+        self.primary_key_value_pair = primary_key_value_pair
+        self.columns_value_dict = column_value_dict
 
     def __all_directories__(self):
         return set([curr_directory for curr_directory in os.listdir(self.tables_directory) if
@@ -79,6 +85,7 @@ class Table:
         current_column_name_file = columns_directory_name + '/' + column_name + '.txt'
         with open(current_column_name_file, 'w') as fo:
             pass
+
     def create_table(self):
         # check if the table is already present and throw exception if it exists
         try:
@@ -91,3 +98,7 @@ class Table:
         self.create_primary_key_partitions()
         self.fill_meta_data_file_for_table()
         self.create_columns()
+
+    def insert_data(self):
+        print("inserted successfully")
+        pass
