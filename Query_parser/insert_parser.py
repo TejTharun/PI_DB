@@ -27,7 +27,7 @@ class InsertParser:
 IF NOT EXISTS; 
     '''
 
-    def parse(self):
+    def parse(self) -> Table:
         try:
             self.query = self.query.lower()
             self.table_name = self.query[self.query.index('into') + len('into'): self.query.index('(')].strip()
@@ -58,6 +58,7 @@ IF NOT EXISTS;
             print("Some error occurred", e)
 
         return self.get_table_model()
+
     def form_meta_data(self):
         table_meta_data_file_path = self.base_path + '/Tables/' + self.table_name + '/meta_data.json'
         with open(table_meta_data_file_path, 'r') as fo:
@@ -79,22 +80,24 @@ IF NOT EXISTS;
                 raise UnknownColumnException(message, name, self.table_name)
 
     def validate_column_values_data_type(self):
-        if len(self.column_names_provided)+1 != self.column_values_provided:
+        if len(self.column_names_provided) != len(self.column_values_provided):
             raise Exception("Column name and Values provided must be same")
-        table_meta_data_file_path = self.base_path + '/' + self.table_name + '/meta_data.json'
+        table_meta_data_file_path = self.base_path + '/Tables/' + self.table_name + '/meta_data.json'
         with open(table_meta_data_file_path, 'r') as fo:
             meta_data = json.load(fo)
         primary_key_value_pair = [(col, val) for col, val in
-                                  zip(self.column_names_provided, self.column_values_provided) if col == meta_data][0]
+                                  zip(self.column_names_provided, self.column_values_provided) if
+                                  col == meta_data['primary_key']][0]
         if not primary_key_value_pair:
             raise PrimaryAbsentException('', self.meta_data['primary_key'])
 
         self.primary_key_value_pair = primary_key_value_pair
-        if 'str' not in type(primary_key_value_pair[1]):
+        if 'str' not in str(type(primary_key_value_pair[1])):
             raise Exception('primary key must be of type str')
-        column_value_pairs = [(col, val) for col, val in zip(self.column_names_provided, self.column_values_provided)]
+        column_value_pairs = [(col, val) for col, val in zip(self.column_names_provided, self.column_values_provided) if
+                              col != meta_data['primary_key']]
         for col, val in column_value_pairs:
-            if self.validate_col_value_pair(col, val):
+            if not self.validate_col_value_pair(col, val):
                 raise Exception(f"{col}'s {val} must be of type {self.meta_data['columns'][col]}")
 
         self.columns = {col: val for col, val in column_value_pairs}
@@ -116,8 +119,6 @@ IF NOT EXISTS;
             return False
 
         return True
-
-
 
     def get_table_model(self):
         return Table.initialize_table_for_insertion(self.table_name, self.primary_key_value_pair, self.columns)

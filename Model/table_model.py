@@ -23,10 +23,11 @@ class Table:
         self.columns = None
 
     @classmethod
-    def initialize_table_for_insertion(self, table_name, primary_key_value_pair: Tuple, column_value_dict: Dict):
-        self.table_name = table_name
-        self.primary_key_value_pair = primary_key_value_pair
-        self.columns_value_dict = column_value_dict
+    def initialize_table_for_insertion(cls, table_name, primary_key_value_pair: Tuple, column_value_dict: Dict):
+        instance = cls(table_name=table_name, primary_key='id', columns={})  # Add required parameters
+        instance.primary_key_value_pair = primary_key_value_pair
+        instance.columns_value_dict = column_value_dict
+        return instance
 
     def __all_directories__(self):
         return set([curr_directory for curr_directory in os.listdir(self.tables_directory) if
