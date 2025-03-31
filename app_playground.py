@@ -1,11 +1,11 @@
 from Query_parser.create_parser import CreateParser
 from Query_parser.insert_parser import InsertParser
 
-# query = 'create table Students (primary_key id: string, age: int, class: str, section: str);'
-# table_object = CreateParser(query).parse()
-#
-# table_object.create_table()
+query = 'create table Students (primary_key id: string, age: int, class: str, section: str);'
+table_object = CreateParser(query).parse()
 
+table_object.create_table()
+print('table created successfully')
 
 '''
     INSERT INTO cycling.cyclist_name (id, lastname, firstname) 

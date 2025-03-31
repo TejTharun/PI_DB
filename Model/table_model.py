@@ -19,8 +19,9 @@ class Table:
         self.table_partition_size = partition_size
         self.default_time_to_live = default_time_to_live
         self.meta_data_file_name = self.current_table_path + '/meta_data.json'
-        self.primary_key_value_pair = None
-        self.columns = None
+        self.primary_key_value_pair: Tuple = None
+        self.columns_value_dict: Dict = None
+
 
     @classmethod
     def initialize_table_for_insertion(cls, table_name, primary_key_value_pair: Tuple, column_value_dict: Dict):
@@ -100,6 +101,31 @@ class Table:
         self.fill_meta_data_file_for_table()
         self.create_columns()
 
+    def get_primary_key_partition(self):
+        primary_key = self.primary_key_value_pair[1]
+        primary_key_hash = str(hash(primary_key))
+        partition = int(primary_key_hash[-1])
+        return partition % self.table_partition_size
+
+    def meta_data_dict(self):
+        with open(self.meta_data_file_name, 'r') as fo:
+            meta_data_dict = json.load(fo)
+        return meta_data_dict
+
     def insert_data(self):
-        print("inserted successfully")
-        pass
+        print(self.primary_key_value_pair)
+        print(self.primary_key_partitions_directory)
+        print(self.columns_value_dict)
+        primary_key_partition_key_directory = get_base_directory() + '/Tables/'+ self.table_name + '/primary_keys/' + str(
+            self.get_primary_key_partition()) + '.txt'
+        primary_key = self.primary_key_value_pair[1]
+        data = primary_key + ':' + str(self.meta_data_dict()['no_of_rows']) + ':' + str(get_time_stamp())
+        with open(primary_key_partition_key_directory, 'a') as fo:
+            fo.write(data)
+        print('primary_key partition updated with ', data)
+        for column in self.columns_value_dict:
+            value = self.columns_value_dict[column]
+            col_file = get_base_directory() + '/Tables/' + self.table_name + '/Columns' + column + '.txt'
+            with open(col_file, 'a') as fo:
+                fo.write(value)
+        print('data successfully written')
